@@ -10,3 +10,4 @@ Implemented:
 To do:
 -Both way sync
 -Opening file editor
+-.ini file
