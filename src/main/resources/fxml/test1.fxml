@@ -35,6 +35,7 @@
                         <ContextMenu>
                           <items>
                             <MenuItem fx:id="changePath" mnemonicParsing="false" onAction="#changePath" text="Change folder" />
+                              <MenuItem fx:id="syncWith2Menu" mnemonicParsing="false" text="Sync with folder 2" />
                           </items>
                         </ContextMenu>
                      </contextMenu>
@@ -52,6 +53,7 @@
                         <ContextMenu>
                            <items>
                               <MenuItem fx:id="changePath1" mnemonicParsing="false" onAction="#changePath" text="Change folder" />
+                              <MenuItem fx:id="syncWith1Menu" mnemonicParsing="false" text="Sync with folder 1" />
                            </items>
                         </ContextMenu>
                      </contextMenu>

@@ -1,7 +1,12 @@
 package JavaFX.FirstShot;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
@@ -11,6 +16,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -45,6 +51,12 @@ public class HelloController implements Initializable {
 
 	@FXML
 	private Button chooseFolder1;
+
+	@FXML
+	private MenuItem syncWith2Menu;
+
+	@FXML
+	private MenuItem syncWith1Menu;
 
 	@FXML
 	private MenuItem choosePath;
@@ -84,18 +96,61 @@ public class HelloController implements Initializable {
 		Scene scene = cm.getScene();
 		Window window = scene.getWindow();
 		TreeItem<String> root = new TreeItem<String>();
-		if (chooseFolder.isVisible()) {
-			chooseFolder.setVisible(false);
+		File folder = fc.showDialog(window);
+		if (folder == null) {
+			return;
 		}
-
 		if (tab1.isSelected()) {
-			folder_tab1 = fc.showDialog(window);
+			folder_tab1 = folder;
+			chooseFolder.setVisible(false);
 			root = createTree(event, folder_tab1);
 			folderTreeView.setRoot(root);
 		} else if (tab2.isSelected()) {
-			folder_tab2 = fc.showDialog(window);
+			folder_tab2 = folder;
 			root = createTree(event, folder_tab2);
+			chooseFolder1.setVisible(false);
 			folderTreeView1.setRoot(root);
+		}
+
+	}
+
+	private void sync(int currentFolder, int folderWithNewFiles) {
+		log.info("Syncing folder " + currentFolder + " with folder " + folderWithNewFiles);
+		File folderFrom;
+		File folderTo;
+		Path pathFrom, pathTo;
+		switch (currentFolder) {
+		case 1:
+			folderTo = folder_tab2;
+			break;
+		case 2:
+			folderTo = folder_tab1;
+			break;
+		default:
+			return;
+		}
+
+		switch (folderWithNewFiles) {
+		case 1:
+			folderFrom = folder_tab2;
+			break;
+		case 2:
+			folderFrom = folder_tab1;
+			break;
+		default:
+			return;
+		}
+		log.debug("FolderFrom: " + Paths.get(folderFrom.toURI()));
+		log.debug("Folder to: " + Paths.get(folderTo.toURI()));
+		CopyOption[] options = new CopyOption[] {};
+		for (File file : folderFrom.listFiles()) {
+			try {
+				pathFrom = Paths.get(file.getAbsolutePath());
+				pathTo = Paths.get(folderTo.getAbsolutePath(), file.getName());
+				Files.copy(pathFrom, pathTo, options);
+			} catch (IOException e) {
+				log.error(e.toString());
+			}
 		}
 
 	}
@@ -245,6 +300,22 @@ public class HelloController implements Initializable {
 				selectedItem = newValue;
 			}
 
+		});
+		syncWith2Menu.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				sync(1, 2);
+
+			}
+		});
+		syncWith1Menu.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				sync(2, 1);
+
+			}
 		});
 
 	}
