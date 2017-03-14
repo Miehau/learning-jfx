@@ -11,3 +11,7 @@ To do:
 -Both way sync
 -Opening file editor
 -.ini file
+
+
+Repairs required:
+-sync with folder independent from active tab
