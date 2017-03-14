@@ -152,6 +152,17 @@ public class HelloController implements Initializable {
 				log.error(e.toString());
 			}
 		}
+		TreeItem<String> root = createTree(new ActionEvent(), folderTo);
+		switch (currentFolder) {
+		case 1:
+			folderTreeView1.setRoot(root);
+			break;
+		case 2:
+			folderTreeView.setRoot(root);
+			break;
+		default:
+			return;
+		}
 
 	}
 
@@ -305,7 +316,7 @@ public class HelloController implements Initializable {
 
 			@Override
 			public void handle(ActionEvent event) {
-				sync(1, 2);
+				sync(2, 1);
 
 			}
 		});
@@ -313,7 +324,7 @@ public class HelloController implements Initializable {
 
 			@Override
 			public void handle(ActionEvent event) {
-				sync(2, 1);
+				sync(1, 2);
 
 			}
 		});
