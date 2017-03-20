@@ -1,5 +1,8 @@
 package JavaFX.FirstShot;
 
+import java.io.File;
+
+import org.fuin.utils4j.Utils4J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +17,12 @@ public class MainApp extends Application {
 	private static final Logger log = LoggerFactory.getLogger(MainApp.class);
 
 	public static void main(String[] args) throws Exception {
+		Utils4J.addToClasspath(
+				"file:///" + System.getProperty("java.home") + File.separator + "lib" + File.separator + "jfxrt.jar");
 		launch(args);
 	}
 
 	public void start(Stage stage) throws Exception {
-
 
 		log.info("Starting Hello JavaFX and Maven demonstration application");
 

@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
+import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +120,6 @@ public class HelloController implements Initializable {
 		log.info("Syncing folder " + currentFolder + " with folder " + folderWithNewFiles);
 		File folderFrom;
 		File folderTo;
-		Path pathFrom, pathTo;
 		switch (currentFolder) {
 		case 1:
 			folderTo = folder_tab2;
@@ -143,15 +144,7 @@ public class HelloController implements Initializable {
 		log.debug("FolderFrom: " + Paths.get(folderFrom.toURI()));
 		log.debug("Folder to: " + Paths.get(folderTo.toURI()));
 		CopyOption[] options = new CopyOption[] {};
-		for (File file : folderFrom.listFiles()) {
-			try {
-				pathFrom = Paths.get(file.getAbsolutePath());
-				pathTo = Paths.get(folderTo.getAbsolutePath(), file.getName());
-				Files.copy(pathFrom, pathTo, options);
-			} catch (IOException e) {
-				log.error(e.toString());
-			}
-		}
+		copy(folderFrom, folderTo, options);
 		TreeItem<String> root = createTree(new ActionEvent(), folderTo);
 		switch (currentFolder) {
 		case 1:
@@ -164,6 +157,25 @@ public class HelloController implements Initializable {
 			return;
 		}
 
+	}
+
+	private void copy(File folderFrom, File folderTo, CopyOption[] options) {
+		Path pathFrom;
+		Path pathTo;
+		for (File file : folderFrom.listFiles()) {
+
+			try {
+				pathFrom = Paths.get(file.getAbsolutePath());
+				pathTo = Paths.get(folderTo.getAbsolutePath(), file.getName());
+				Files.copy(pathFrom, pathTo, options);
+			} catch (IOException e) {
+				log.error(e.toString());
+			}
+			if (file.isDirectory()) {
+				File tempFolderTo = new File(folderTo.getAbsolutePath() + "/" + file.getName());
+				copy(file, tempFolderTo, options);
+			}
+		}
 	}
 
 	public void choosePath(ActionEvent event) {
@@ -194,6 +206,7 @@ public class HelloController implements Initializable {
 			folderTreeView1.setEditable(true);
 			folderTreeView1.setRoot(root);
 		}
+
 	}
 
 	private TreeItem<String> createTree(ActionEvent event, File folder) {
@@ -287,13 +300,23 @@ public class HelloController implements Initializable {
 		// }
 	}
 
-	public void close(ActionEvent event) {
+	public void close(ActionEvent event) throws InvalidFileFormatException, IOException {
 		log.info("Closing...");
+		saveInitValues();
 		Platform.exit();
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		try {
+			loadInitValues();
+		} catch (InvalidFileFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		folderTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 
 			@Override
@@ -329,6 +352,34 @@ public class HelloController implements Initializable {
 			}
 		});
 
+	}
+
+	private void loadInitValues() throws InvalidFileFormatException, IOException {
+		log.info("Loading init files...");
+		Ini ini = new Ini(new File(
+				"C:\\Users\\MIMLAK\\git\\learning-jfx\\Project\\FirstShot\\src\\main\\resources\\init\\init.ini"));
+		if (!ini.get("initial_folders", "tab1").isEmpty()) {
+			folder_tab1 = new File(ini.get("initial_folders", "tab1"));
+			TreeItem<String> root = createTree(new ActionEvent(), folder_tab1);
+			folderTreeView.setRoot(root);
+			chooseFolder.setVisible(false);
+		}
+		if (!ini.get("initial_folders", "tab2").isEmpty()) {
+			folder_tab2 = new File(ini.get("initial_folders", "tab2"));
+			TreeItem<String> root = createTree(new ActionEvent(), folder_tab2);
+			folderTreeView1.setRoot(root);
+			chooseFolder1.setVisible(false);
+		}
+	}
+
+	private void saveInitValues() throws InvalidFileFormatException, IOException {
+		Ini ini = new Ini(new File(
+				"C:\\Users\\MIMLAK\\git\\learning-jfx\\Project\\FirstShot\\src\\main\\resources\\init\\init.ini"));
+
+		ini.clear();
+		ini.put("initial_folders", "tab1", folder_tab1.toString());
+		ini.put("initial_folders", "tab2", folder_tab2.toString());
+		ini.store();
 	}
 
 }
