@@ -26,7 +26,14 @@
                   <content>
                     <AnchorPane fx:id="tabAnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <TreeView id="folderTreeView" fx:id="folderTreeView" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <TreeView id="folderTreeView" fx:id="folderTreeView" editable="true" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <contextMenu>
+                                    <ContextMenu>
+                                      <items>
+                                        <MenuItem mnemonicParsing="false" onAction="#changeName" text="Change name" />
+                                      </items>
+                                    </ContextMenu>
+                                 </contextMenu></TreeView>
                               <Button fx:id="chooseFolder" layoutX="99.0" layoutY="360.0" mnemonicParsing="false" onAction="#chooseFolder" text="Choose folder" />
                            </children>
                         </AnchorPane>
@@ -65,6 +72,17 @@
                   <StackPane fx:id="stackPane" prefHeight="773.0" prefWidth="955.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <ImageView fx:id="imgView" fitHeight="546.0" fitWidth="711.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
+                        <DialogPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="480.0">
+                            <header>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
+                            </header>
+                            <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
+                            </content>
+                            <expandableContent>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
+                            </expandableContent>
+                        </DialogPane>
                      </children>
                   </StackPane>
                </children>
@@ -75,7 +93,6 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="choosePath" mnemonicParsing="false" onAction="#choosePath" text="Choose path..." />
               <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
             </items>
           </Menu>

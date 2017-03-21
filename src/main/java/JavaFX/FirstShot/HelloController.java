@@ -28,6 +28,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
@@ -35,7 +36,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import javafx.util.Callback;
 
 public class HelloController implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(HelloController.class);
@@ -59,9 +62,6 @@ public class HelloController implements Initializable {
 
 	@FXML
 	private MenuItem syncWith1Menu;
-
-	@FXML
-	private MenuItem choosePath;
 
 	@FXML
 	private MenuItem changePath;
@@ -90,6 +90,21 @@ public class HelloController implements Initializable {
 	private TreeItem<String> selectedItem;
 	private File folder_tab1;
 	private File folder_tab2;
+	private String selectedFilePath;
+
+	public void changeName() throws IOException {
+		log.info("Changing name of file: " + selectedItem.getValue());
+		log.info("Selected file path: " + selectedFilePath);
+		File f = new File(selectedFilePath);
+		File f2 = new File(selectedFilePath.substring(0, selectedFilePath.length() - selectedItem.getValue().length())
+				+ "dupa.txt");
+		Path source = f.toPath();
+		Path destination = f2.toPath();
+		Files.move(source, destination);
+		
+		FileChooser fc = new FileChooser();
+		
+	}
 
 	public void changePath(ActionEvent event) {
 		DirectoryChooser fc = new DirectoryChooser();
@@ -178,9 +193,6 @@ public class HelloController implements Initializable {
 		}
 	}
 
-	public void choosePath(ActionEvent event) {
-	}
-
 	public void chooseFolder(ActionEvent event) {
 		final DirectoryChooser dirChooser = new DirectoryChooser();
 		File folder = null;
@@ -217,7 +229,7 @@ public class HelloController implements Initializable {
 		TreeItem<String> root = new TreeItem<>(folder.getAbsolutePath().toString(), imgView);
 		root.setExpanded(true);
 		for (File file : folder.listFiles()) {
-			performBranchCreation(file, root);
+			addBranchesToRoot(file, root);
 		}
 		return root;
 	}
@@ -243,6 +255,7 @@ public class HelloController implements Initializable {
 			// path.replace(' ', '%');
 			log.info("File path: " + path);
 
+			selectedFilePath = path.substring(6);
 			// show Img
 			Image img = new Image(path);
 			imgView.fitWidthProperty().bind(stackPane.widthProperty());
@@ -255,7 +268,7 @@ public class HelloController implements Initializable {
 
 	}
 
-	private void performBranchCreation(File folder, TreeItem<String> root) {
+	private void addBranchesToRoot(File folder, TreeItem<String> root) {
 		Image img = new Image(folder.toURI().toString(), 50, 50, true, true, true);
 		Node imgView = new ImageView(img);
 		TreeItem<String> treeitem = new TreeItem<>(folder.getName(), imgView);
@@ -264,7 +277,7 @@ public class HelloController implements Initializable {
 		if (!folder.isHidden() && folder.isDirectory()) {
 			for (File file : folder.listFiles()) {
 				log.debug(file.getName());
-				performBranchCreation(file, treeitem);
+				addBranchesToRoot(file, treeitem);
 
 			}
 		}
@@ -351,6 +364,14 @@ public class HelloController implements Initializable {
 
 			}
 		});
+		folderTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>(){
+
+			@Override
+			public TreeCell<String> call(TreeView<String> param) {
+				return new TextFieldTreeCellImpl();
+			}
+			
+		});
 
 	}
 
@@ -375,7 +396,6 @@ public class HelloController implements Initializable {
 	private void saveInitValues() throws InvalidFileFormatException, IOException {
 		Ini ini = new Ini(new File(
 				"C:\\Users\\MIMLAK\\git\\learning-jfx\\Project\\FirstShot\\src\\main\\resources\\init\\init.ini"));
-
 		ini.clear();
 		ini.put("initial_folders", "tab1", folder_tab1.toString());
 		ini.put("initial_folders", "tab2", folder_tab2.toString());
