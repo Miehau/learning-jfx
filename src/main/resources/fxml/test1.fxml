@@ -72,17 +72,6 @@
                   <StackPane fx:id="stackPane" prefHeight="773.0" prefWidth="955.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <ImageView fx:id="imgView" fitHeight="546.0" fitWidth="711.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
-                        <DialogPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="480.0">
-                            <header>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
-                            </header>
-                            <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
-                            </content>
-                            <expandableContent>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0" />
-                            </expandableContent>
-                        </DialogPane>
                      </children>
                   </StackPane>
                </children>

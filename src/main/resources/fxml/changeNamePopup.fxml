@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="107.0" prefWidth="340.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <PasswordField fx:id="newFileName" alignment="CENTER" layoutX="67.0" layoutY="41.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="206.0" promptText="Enter new name" />
+      <Button fx:id="okChangeNameButton" layoutX="172.0" layoutY="68.0" mnemonicParsing="false" onAction="#okChangeNameButton" prefHeight="25.0" prefWidth="101.0" text="Ok" />
+      <Button layoutX="67.0" layoutY="68.0" mnemonicParsing="false" onAction="#close" prefHeight="25.0" prefWidth="101.0" text="Cancel" />
+   </children>
+</AnchorPane>

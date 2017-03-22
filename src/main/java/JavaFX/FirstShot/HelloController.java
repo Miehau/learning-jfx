@@ -20,15 +20,16 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
@@ -36,9 +37,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.stage.Window;
-import javafx.util.Callback;
 
 public class HelloController implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(HelloController.class);
@@ -87,23 +87,46 @@ public class HelloController implements Initializable {
 	@FXML
 	private TabPane tabPane;
 
+	@FXML
+	private Button okChangeNameButton;
+
 	private TreeItem<String> selectedItem;
 	private File folder_tab1;
 	private File folder_tab2;
 	private String selectedFilePath;
 
+	public void okChangeNameButton() {
+		log.info("okChangeNameButton pressed");
+	}
+
 	public void changeName() throws IOException {
-		log.info("Changing name of file: " + selectedItem.getValue());
-		log.info("Selected file path: " + selectedFilePath);
-		File f = new File(selectedFilePath);
-		File f2 = new File(selectedFilePath.substring(0, selectedFilePath.length() - selectedItem.getValue().length())
-				+ "dupa.txt");
-		Path source = f.toPath();
-		Path destination = f2.toPath();
-		Files.move(source, destination);
-		
-		FileChooser fc = new FileChooser();
-		
+		Stage dialog = new Stage();
+		String fxmlFile = "/fxml/changeNamePopup.fxml";
+		log.debug("Loading FXML for modal view from: {}", fxmlFile);
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+		loader.setController(new NewNameController());
+		Parent rootNode = (Parent) loader.load();
+		// Parent rootNode = (Parent)
+		// loader.load(getClass().getResourceAsStream(fxmlFile));
+
+		log.debug("Showing JFX scene");
+		Scene scene = new Scene(rootNode);
+		// scene.getStylesheets().add("/styles/styles.css");
+
+		dialog.setTitle("Hello JavaFX and Maven");
+		dialog.setScene(scene);
+		dialog.show();
+		//
+		// log.info("Changing name of file: " + selectedItem.getValue());
+		// log.info("Selected file path: " + selectedFilePath);
+		// File f = new File(selectedFilePath);
+		// File f2 = new File(selectedFilePath.substring(0,
+		// selectedFilePath.length() - selectedItem.getValue().length())
+		// + "dupa.txt");
+		// Path source = f.toPath();
+		// Path destination = f2.toPath();
+		// Files.move(source, destination);
+
 	}
 
 	public void changePath(ActionEvent event) {
@@ -361,16 +384,7 @@ public class HelloController implements Initializable {
 			@Override
 			public void handle(ActionEvent event) {
 				sync(1, 2);
-
 			}
-		});
-		folderTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>(){
-
-			@Override
-			public TreeCell<String> call(TreeView<String> param) {
-				return new TextFieldTreeCellImpl();
-			}
-			
 		});
 
 	}
@@ -379,13 +393,13 @@ public class HelloController implements Initializable {
 		log.info("Loading init files...");
 		Ini ini = new Ini(new File(
 				"C:\\Users\\MIMLAK\\git\\learning-jfx\\Project\\FirstShot\\src\\main\\resources\\init\\init.ini"));
-		if (!ini.get("initial_folders", "tab1").isEmpty()) {
+		if (!ini.get("initial_folders", "tab1").isEmpty() && (new File(ini.get("initial_folders", "tab1")).exists())) {
 			folder_tab1 = new File(ini.get("initial_folders", "tab1"));
 			TreeItem<String> root = createTree(new ActionEvent(), folder_tab1);
 			folderTreeView.setRoot(root);
 			chooseFolder.setVisible(false);
 		}
-		if (!ini.get("initial_folders", "tab2").isEmpty()) {
+		if (!ini.get("initial_folders", "tab2").isEmpty() && (new File(ini.get("initial_folders", "tab2")).exists())) {
 			folder_tab2 = new File(ini.get("initial_folders", "tab2"));
 			TreeItem<String> root = createTree(new ActionEvent(), folder_tab2);
 			folderTreeView1.setRoot(root);
