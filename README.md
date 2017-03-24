@@ -5,6 +5,9 @@ Simple project in JFX.
 Implemented:
 -Directory/file browser
 -Picture lookup
+-.ini file
+	- remember last opened folders
+-Rename file
 
 
 To do:
@@ -12,10 +15,9 @@ To do:
 -Opening file editor
 -.ini file
 -context menu -> file manipulation
+-refresh data
 
 
 Repairs required:
 -sync with folder independent from active tab
-
-
-do przeanalizowania, jak to dziala z TreeCell!!
+-implement finally celltree :/

@@ -37,6 +37,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -104,7 +105,7 @@ public class HelloController implements Initializable {
 		String fxmlFile = "/fxml/changeNamePopup.fxml";
 		log.debug("Loading FXML for modal view from: {}", fxmlFile);
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-		loader.setController(new NewNameController());
+		loader.setController(new NewNameController(selectedFilePath, selectedItem.getValue()));
 		Parent rootNode = (Parent) loader.load();
 		// Parent rootNode = (Parent)
 		// loader.load(getClass().getResourceAsStream(fxmlFile));
@@ -112,20 +113,14 @@ public class HelloController implements Initializable {
 		log.debug("Showing JFX scene");
 		Scene scene = new Scene(rootNode);
 		// scene.getStylesheets().add("/styles/styles.css");
-
-		dialog.setTitle("Hello JavaFX and Maven");
+		dialog.setTitle("Enter new file name:");
+		dialog.initModality(Modality.APPLICATION_MODAL);
+		dialog.setResizable(false);
+		dialog.initOwner(chooseFolder.getScene().getWindow());
 		dialog.setScene(scene);
-		dialog.show();
-		//
-		// log.info("Changing name of file: " + selectedItem.getValue());
-		// log.info("Selected file path: " + selectedFilePath);
-		// File f = new File(selectedFilePath);
-		// File f2 = new File(selectedFilePath.substring(0,
-		// selectedFilePath.length() - selectedItem.getValue().length())
-		// + "dupa.txt");
-		// Path source = f.toPath();
-		// Path destination = f2.toPath();
-		// Files.move(source, destination);
+		dialog.showAndWait();
+		folderTreeView.refresh();
+
 
 	}
 
@@ -260,11 +255,17 @@ public class HelloController implements Initializable {
 	public void chooseRow() {
 		File folder = null;
 		TreeItem<String> tempItem = new TreeItem<String>("");
+		boolean skipFirst = true;
 		tempItem = selectedItem;
 		if (!(selectedItem == null)) {
 			StringBuilder sb = new StringBuilder();
+			StringBuilder filePathBuilder = new StringBuilder();
 			while (!(selectedItem.getParent() == null)) {
-				sb.insert(0, "/" + selectedItem.getValue());
+				sb.insert(0, "\\" + selectedItem.getValue());
+				if (!skipFirst) {
+					filePathBuilder.insert(0, "\\" + selectedItem.getValue());
+				}
+				skipFirst = false;
 				selectedItem = selectedItem.getParent();
 			}
 			sb.delete(0, 1);
@@ -274,11 +275,11 @@ public class HelloController implements Initializable {
 				folder = folder_tab2;
 			}
 			sb.insert(0, folder.toURI());
+			filePathBuilder.insert(0, folder.toPath());
 			String path = sb.toString();
 			// path.replace(' ', '%');
 			log.info("File path: " + path);
-
-			selectedFilePath = path.substring(6);
+			selectedFilePath = filePathBuilder.toString();
 			// show Img
 			Image img = new Image(path);
 			imgView.fitWidthProperty().bind(stackPane.widthProperty());

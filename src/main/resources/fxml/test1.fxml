@@ -51,7 +51,14 @@
                      <content>
                         <AnchorPane fx:id="tabAnchorPane1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <TreeView id="folderTreeView" fx:id="folderTreeView1" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <TreeView id="folderTreeView" fx:id="folderTreeView1" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <contextMenu>
+                                    <ContextMenu>
+                                       <items>
+                                          <MenuItem mnemonicParsing="false" onAction="#changeName" text="Change name" />
+                                       </items>
+                                    </ContextMenu>
+                                 </contextMenu></TreeView>
                               <Button fx:id="chooseFolder1" layoutX="99.0" layoutY="360.0" mnemonicParsing="false" onAction="#chooseFolder" text="Choose folder" />
                            </children>
                         </AnchorPane>
