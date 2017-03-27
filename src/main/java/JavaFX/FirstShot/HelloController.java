@@ -1,5 +1,6 @@
 package JavaFX.FirstShot;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -22,6 +23,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -34,6 +37,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
@@ -107,21 +111,30 @@ public class HelloController implements Initializable {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
 		loader.setController(new NewNameController(selectedFilePath, selectedItem.getValue()));
 		Parent rootNode = (Parent) loader.load();
-		// Parent rootNode = (Parent)
-		// loader.load(getClass().getResourceAsStream(fxmlFile));
 
 		log.debug("Showing JFX scene");
 		Scene scene = new Scene(rootNode);
-		// scene.getStylesheets().add("/styles/styles.css");
 		dialog.setTitle("Enter new file name:");
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.setResizable(false);
 		dialog.initOwner(chooseFolder.getScene().getWindow());
 		dialog.setScene(scene);
 		dialog.showAndWait();
-		folderTreeView.refresh();
+		if (tab1.isSelected()) {
+			folderTreeView.setRoot(createTree(new ActionEvent(), folder_tab1));
+		} else if (tab2.isSelected()) {
+			folderTreeView1.setRoot(createTree(new ActionEvent(), folder_tab2));
+		}
 
+	}
 
+	public void scrollImageView() {
+		log.info("Scrolling through imageView");
+	}
+
+	private void openFile(File file) throws IOException {
+		Desktop dt = Desktop.getDesktop();
+		dt.open(file);
 	}
 
 	public void changePath(ActionEvent event) {
@@ -215,7 +228,6 @@ public class HelloController implements Initializable {
 		final DirectoryChooser dirChooser = new DirectoryChooser();
 		File folder = null;
 		log.debug("Choosing folder...");
-
 		folder = dirChooser.showDialog(((Node) event.getTarget()).getScene().getWindow());
 		if (folder == null) {
 			return;
@@ -285,11 +297,11 @@ public class HelloController implements Initializable {
 			imgView.fitWidthProperty().bind(stackPane.widthProperty());
 			imgView.fitHeightProperty().bind(stackPane.heightProperty());
 			imgView.setPreserveRatio(true);
+			imgView.setCache(true);
 			imgView.setImage(img);
-
+			imgView.setViewport(new Rectangle2D(0, 0, img.getWidth(), img.getHeight()));
 		}
 		selectedItem = tempItem;
-
 	}
 
 	private void addBranchesToRoot(File folder, TreeItem<String> root) {
@@ -302,10 +314,8 @@ public class HelloController implements Initializable {
 			for (File file : folder.listFiles()) {
 				log.debug(file.getName());
 				addBranchesToRoot(file, treeitem);
-
 			}
 		}
-
 	}
 
 	public void sayHello() {
@@ -363,6 +373,40 @@ public class HelloController implements Initializable {
 			}
 
 		});
+		folderTreeView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				chooseRow();
+				if (event.getClickCount() == 2 && tab1.isSelected()) {
+					try {
+						log.debug("Handling event from doubleclick tab 1");
+						log.debug("File path: " + selectedFilePath + "\\" + selectedItem.getValue());
+						openFile(new File(selectedFilePath + "\\" + selectedItem.getValue()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		folderTreeView1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				chooseRow();
+				if (event.getClickCount() == 2 && tab2.isSelected()) {
+					try {
+						log.debug("Handling event from doubleclick tab 2");
+						log.debug("File path: " + selectedFilePath + "\\" + selectedItem.getValue());
+						openFile(new File(selectedFilePath + "\\" + selectedItem.getValue()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 		folderTreeView1.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 
 			@Override
@@ -370,14 +414,12 @@ public class HelloController implements Initializable {
 					TreeItem<String> newValue) {
 				selectedItem = newValue;
 			}
-
 		});
 		syncWith2Menu.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
 				sync(2, 1);
-
 			}
 		});
 		syncWith1Menu.setOnAction(new EventHandler<ActionEvent>() {
@@ -386,6 +428,19 @@ public class HelloController implements Initializable {
 			public void handle(ActionEvent event) {
 				sync(1, 2);
 			}
+		});
+		imgView.setOnScroll(e -> {
+			double delta = e.getDeltaY() / 10;
+			double scale = delta > 0 ? delta : -1 / delta;
+			Rectangle2D viewport = imgView.getViewport();
+			double height = viewport.getHeight();
+			double width = viewport.getWidth();
+			System.out.println("x " + viewport.getMinX() + " y:" + viewport.getMinY() + " height: "
+					+ viewport.getHeight() + " width: " + viewport.getWidth() + " delta: " + scale);
+			log.info("X " + viewport.getMinX() + " - " + viewport.getMaxX());
+			log.info("Y " + viewport.getMinY() + " - " + viewport.getMaxY());
+			imgView.setViewport(new Rectangle2D(viewport.getMinX(), viewport.getMinY(), width * scale, height * scale));
+
 		});
 
 	}

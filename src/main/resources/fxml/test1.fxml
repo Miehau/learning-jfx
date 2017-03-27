@@ -17,92 +17,98 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <SplitPane dividerPositions="0.25" layoutY="25.0" prefHeight="775.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-        <items>
-            <TabPane fx:id="tabPane" minWidth="288.0" prefHeight="773.0" prefWidth="288.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="1.5" tabMinWidth="1.5">
-              <tabs>
-                <Tab fx:id="tab1" text="Folder 1">
-                  <content>
-                    <AnchorPane fx:id="tabAnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <TreeView id="folderTreeView" fx:id="folderTreeView" editable="true" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <contextMenu>
-                                    <ContextMenu>
-                                      <items>
-                                        <MenuItem mnemonicParsing="false" onAction="#changeName" text="Change name" />
-                                      </items>
-                                    </ContextMenu>
-                                 </contextMenu></TreeView>
-                              <Button fx:id="chooseFolder" layoutX="99.0" layoutY="360.0" mnemonicParsing="false" onAction="#chooseFolder" text="Choose folder" />
-                           </children>
-                        </AnchorPane>
-                  </content>
-                     <contextMenu>
-                        <ContextMenu>
-                          <items>
-                            <MenuItem fx:id="changePath" mnemonicParsing="false" onAction="#changePath" text="Change folder" />
-                              <MenuItem fx:id="syncWith2Menu" mnemonicParsing="false" text="Sync with folder 2" />
-                          </items>
-                        </ContextMenu>
-                     </contextMenu>
-                </Tab>
-                  <Tab fx:id="tab2" text="Folder2">
-                     <content>
-                        <AnchorPane fx:id="tabAnchorPane1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <TreeView id="folderTreeView" fx:id="folderTreeView1" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <contextMenu>
-                                    <ContextMenu>
-                                       <items>
-                                          <MenuItem mnemonicParsing="false" onAction="#changeName" text="Change name" />
-                                       </items>
-                                    </ContextMenu>
-                                 </contextMenu></TreeView>
-                              <Button fx:id="chooseFolder1" layoutX="99.0" layoutY="360.0" mnemonicParsing="false" onAction="#chooseFolder" text="Choose folder" />
-                           </children>
-                        </AnchorPane>
-                     </content>
-                     <contextMenu>
-                        <ContextMenu>
-                           <items>
-                              <MenuItem fx:id="changePath1" mnemonicParsing="false" onAction="#changePath" text="Change folder" />
-                              <MenuItem fx:id="syncWith1Menu" mnemonicParsing="false" text="Sync with folder 1" />
-                           </items>
-                        </ContextMenu>
-                     </contextMenu>
-                  </Tab>
-              </tabs>
-            </TabPane>
-            <AnchorPane fx:id="anchorPaneView" disable="true" prefHeight="200.0" prefWidth="200.0">
-               <children>
-                  <StackPane fx:id="stackPane" prefHeight="773.0" prefWidth="955.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <ImageView fx:id="imgView" fitHeight="546.0" fitWidth="711.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
-                     </children>
-                  </StackPane>
-               </children>
-            </AnchorPane>
-        </items>
-      </SplitPane>
-      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="1269.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </children>
+	<children>
+		<SplitPane dividerPositions="0.25" layoutY="25.0" prefHeight="775.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+			<items>
+				<TabPane fx:id="tabPane" minWidth="288.0" prefHeight="773.0" prefWidth="288.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="1.5" tabMinWidth="1.5">
+					<tabs>
+						<Tab fx:id="tab1" text="Folder 1">
+							<content>
+								<AnchorPane fx:id="tabAnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
+									<children>
+										<TreeView id="folderTreeView" fx:id="folderTreeView" editable="true" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+											<contextMenu>
+												<ContextMenu>
+													<items>
+														<MenuItem mnemonicParsing="false" onAction="#changeName" text="Change name" />
+													</items>
+												</ContextMenu>
+											</contextMenu>
+										</TreeView>
+										<Button fx:id="chooseFolder" layoutX="99.0" layoutY="360.0" mnemonicParsing="false" onAction="#chooseFolder" text="Choose folder" />
+									</children>
+								</AnchorPane>
+							</content>
+							<contextMenu>
+								<ContextMenu>
+									<items>
+										<MenuItem fx:id="changePath" mnemonicParsing="false" onAction="#changePath" text="Change folder" />
+										<MenuItem fx:id="syncWith2Menu" mnemonicParsing="false" text="Sync with folder 2" />
+									</items>
+								</ContextMenu>
+							</contextMenu>
+						</Tab>
+						<Tab fx:id="tab2" text="Folder2">
+							<content>
+								<AnchorPane fx:id="tabAnchorPane1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="200.0">
+									<children>
+										<TreeView id="folderTreeView" fx:id="folderTreeView1" onMouseClicked="#chooseRow" prefHeight="744.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+											<contextMenu>
+												<ContextMenu>
+													<items>
+														<MenuItem mnemonicParsing="false" onAction="#changeName" text="Change name" />
+													</items>
+												</ContextMenu>
+											</contextMenu>
+										</TreeView>
+										<Button fx:id="chooseFolder1" layoutX="99.0" layoutY="360.0" mnemonicParsing="false" onAction="#chooseFolder" text="Choose folder" />
+									</children>
+								</AnchorPane>
+							</content>
+							<contextMenu>
+								<ContextMenu>
+									<items>
+										<MenuItem fx:id="changePath1" mnemonicParsing="false" onAction="#changePath" text="Change folder" />
+										<MenuItem fx:id="syncWith1Menu" mnemonicParsing="false" text="Sync with folder 1" />
+									</items>
+								</ContextMenu>
+							</contextMenu>
+						</Tab>
+					</tabs>
+				</TabPane>
+				<AnchorPane fx:id="anchorPaneView" prefHeight="200.0" prefWidth="200.0">
+					<children>
+						<StackPane fx:id="stackPane" prefHeight="773.0" prefWidth="955.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+							<children>
+								<ImageView fx:id="imgView" fitHeight="546.0" fitWidth="711.0" onZoom="#scrollImageView" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+									<StackPane.margin>
+										<Insets />
+									</StackPane.margin>
+								</ImageView>
+							</children>
+						</StackPane>
+					</children>
+				</AnchorPane>
+			</items>
+		</SplitPane>
+		<MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="1269.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<menus>
+				<Menu mnemonicParsing="false" text="File">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Edit">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Delete" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Help">
+					<items>
+						<MenuItem mnemonicParsing="false" text="About" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</children>
 </AnchorPane>
