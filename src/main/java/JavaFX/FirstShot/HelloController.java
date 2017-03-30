@@ -16,8 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -31,6 +33,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
@@ -95,10 +101,21 @@ public class HelloController implements Initializable {
 	@FXML
 	private Button okChangeNameButton;
 
+	@FXML
+	private ScrollPane scrollPane;
+
+	@FXML
+	private AnchorPane viewAnchorPane;
+
+	@FXML
+	private SplitPane splitPane;
+
 	private TreeItem<String> selectedItem;
 	private File folder_tab1;
 	private File folder_tab2;
 	private String selectedFilePath;
+	private boolean fitToView = false;
+	private ObservableValue<? extends Number> splitPaneRightWidth = new SimpleDoubleProperty(0);
 
 	public void okChangeNameButton() {
 		log.info("okChangeNameButton pressed");
@@ -130,6 +147,36 @@ public class HelloController implements Initializable {
 
 	public void scrollImageView() {
 		log.info("Scrolling through imageView");
+	}
+
+	public void fitToView() {
+		imgView.fitHeightProperty().bind(scrollPane.heightProperty());
+		imgView.fitWidthProperty().bind(scrollPane.widthProperty());
+		fitToView = true;
+		log.info(imgView.getFitHeight() + "  " + imgView.getFitWidth());
+		double imgHeight = imgView.getImage().getHeight();
+		double imgWidth = imgView.getImage().getWidth();
+		double imgViewHeight = scrollPane.getHeight();
+		double ratio = imgHeight / imgWidth;
+
+		switch (imgHeight < imgWidth ? 1 : 2) {
+		case 1:
+			imgView.setTranslateY(imgViewHeight / 2 - scrollPane.getWidth() * ratio / 2);
+			break;
+		case 2:
+			break;
+		default:
+			break;
+
+		}
+
+	}
+
+	public void showOriginalSize() {
+		imgView.fitHeightProperty().bind(imgView.getImage().heightProperty());
+		imgView.fitWidthProperty().bind(imgView.getImage().widthProperty());
+		fitToView = false;
+		imgView.setTranslateY(0);
 	}
 
 	private void openFile(File file) throws IOException {
@@ -294,12 +341,18 @@ public class HelloController implements Initializable {
 			selectedFilePath = filePathBuilder.toString();
 			// show Img
 			Image img = new Image(path);
-			imgView.fitWidthProperty().bind(stackPane.widthProperty());
-			imgView.fitHeightProperty().bind(stackPane.heightProperty());
+			if (fitToView) {
+				imgView.fitHeightProperty().bind(scrollPane.heightProperty());
+				imgView.fitWidthProperty().bind(scrollPane.widthProperty());
+			} else {
+				imgView.fitHeightProperty().bind(img.heightProperty());
+				imgView.fitWidthProperty().bind(img.widthProperty());
+			}
 			imgView.setPreserveRatio(true);
 			imgView.setCache(true);
 			imgView.setImage(img);
 			imgView.setViewport(new Rectangle2D(0, 0, img.getWidth(), img.getHeight()));
+			scrollPane.setContent(imgView);
 		}
 		selectedItem = tempItem;
 	}
@@ -430,19 +483,58 @@ public class HelloController implements Initializable {
 			}
 		});
 		imgView.setOnScroll(e -> {
-			double delta = e.getDeltaY() / 10;
-			double scale = delta > 0 ? delta : -1 / delta;
+			double delta = e.getDeltaY();
+			double scale = delta > 0 ? 1 / delta * 100 : -1 * delta / 100;
 			Rectangle2D viewport = imgView.getViewport();
 			double height = viewport.getHeight();
 			double width = viewport.getWidth();
+			double newX;
+			double newY;
+			Point2D mousePoint = new Point2D(e.getX(), e.getY());
+			newX = mousePoint.getX() / imgView.getFitWidth() * width * scale + width * scale / 2;
+			newY = mousePoint.getY() / imgView.getFitHeight() * height * scale;
+			log.debug("mouse coords: " + mousePoint);
 			System.out.println("x " + viewport.getMinX() + " y:" + viewport.getMinY() + " height: "
 					+ viewport.getHeight() + " width: " + viewport.getWidth() + " delta: " + scale);
-			log.info("X " + viewport.getMinX() + " - " + viewport.getMaxX());
-			log.info("Y " + viewport.getMinY() + " - " + viewport.getMaxY());
-			imgView.setViewport(new Rectangle2D(viewport.getMinX(), viewport.getMinY(), width * scale, height * scale));
+			log.info("new X: " + newX);
+			log.info("new Y: " + newY);
+			imgView.setCache(false);
+			if (delta < 0)
+				imgView.setViewport(new Rectangle2D(newX, newY, width * scale, height * scale));
+			else {
+				imgView.setViewport(
+						new Rectangle2D(viewport.getMinX(), viewport.getMinY(), width * scale, height * scale));
+			}
+
+		});
+		imgView.setOnMouseMoved(e -> {
+			log.info("Mouse coords: [" + e.getX() + "," + e.getY() + "]");
+			log.info("[Width, Height]: [" + imgView.getImage().getWidth() + "," + imgView.getImage().getHeight() + "]");
+			log.info(" ");
+		});
+		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+		scrollPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+			if (fitToView) {
+				double imgHeight = imgView.getImage().getHeight();
+				double imgWidth = imgView.getImage().getWidth();
+				double imgViewWidth = (double) newVal;
+				double imgViewHeight = scrollPane.getHeight();
+				double ratio = imgHeight / imgWidth;
+
+				imgView.setTranslateY(imgViewHeight / 2 - imgViewWidth * ratio / 2);
+			}
+			else{
+				imgView.setTranslateY(0);
+			}
 
 		});
 
+	}
+
+	public void dupa() {
+		System.out.println("dupa");
 	}
 
 	private void loadInitValues() throws InvalidFileFormatException, IOException {
